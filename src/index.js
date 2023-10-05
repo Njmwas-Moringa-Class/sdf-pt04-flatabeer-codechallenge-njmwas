@@ -42,9 +42,38 @@
         }
     }
 } */
+
 import apiCLient from "./apiCLient.js";
 
-console.log("Modulized")
+function beerListItem(beer){
+    return `<li data-id="${beer.id}">${beer.name}</li>`;
+}
 
-apiClient.get('/beers').then(beers=>console.log(beers));
+function selectBeer(beer){
+    document.querySelector('#beer-name').innerHTML = beer.name;
+    document.querySelector('#beer-image').src = beer.image_url;
+
+    const beerDesciption = document.querySelector('#beer-description');
+    beerDesciption.innerHTML = beer.description;
+
+    const beerForm = document.querySelector('#description-form');
+
+    const reviews = document.querySelector('#review-list');
+    reviews.innerHTML = beer.reviews.map(review=>`<li>${review}</li>`);
+
+    const reviewForm = document.querySelector('#review-form');
+}
+
+apiCLient.get('/beers').then(beers=>{
+    const beerList = document.querySelector('#beer-list')
+    beerList.innerHTML = beers.map(beerListItem).join('');
+    beerList.querySelectorAll('li').forEach(beerItem=>{
+        beerItem.addEventListener("click", (evt)=>{
+            const id = Number(evt.target.dataset.id);
+            const beer = beers.find(beer=>beer.id === id);
+            if(beer) selectBeer(beer);
+        })
+    })
+    selectBeer(beers[0]);
+});
 
